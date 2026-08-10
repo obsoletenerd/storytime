@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="hf-root" data-hf-theme="auto">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,24 +8,29 @@
         <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}" />
 
         <title>{% block title %}Bedtime Story{% endblock %}</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='nano.css') }}" />
+        <link rel="stylesheet" href="{{ config.HOMEFRAME_URL }}/homeframe.css" />
+        <link rel="stylesheet" href="{{ config.HOMEFRAME_URL }}/themes/eucalyptus-glass.css" />
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
     </head>
-    <body>
-        <header>
-            <hgroup>
-                <a href="/"><h1 style="margin: 0; padding: 0">📚 S T O R Y T I M E !</h1></a>
-                <em>Create your own custom bedtime stories</em>
-            </hgroup>
+    <body class="hf-page">
+        <header class="hf-topbar">
+            <a class="hf-brand storytime-brand" href="{{ url_for('index') }}" aria-label="Storytime home">
+                <span class="hf-brand__mark" aria-hidden="true">✦</span>
+                <span>Storytime</span>
+            </a>
+            <nav class="hf-nav" aria-label="Primary navigation">
+                <a class="hf-nav__link {% if request.endpoint == 'index' %}is-active{% endif %}" {% if request.endpoint == 'index' %}aria-current="page"{% endif %} href="{{ url_for('index') }}">Create a story</a>
+            </nav>
         </header>
 
         {% block content %}{% endblock %}
 
-        <footer>
-            <p>
-                © 2025 ObsoleteNerd –
-                <a href="https://github.com/obsoletenerd/Storytime">Source Code</a>
+        <footer class="storytime-footer hf-container">
+            <p class="hf-text-small hf-text-muted">
+                Made for cozy nights · <a href="https://github.com/obsoletenerd/Storytime">Source code</a>
             </p>
         </footer>
+
+        <script defer src="{{ config.HOMEFRAME_URL }}/homeframe.js"></script>
     </body>
 </html>

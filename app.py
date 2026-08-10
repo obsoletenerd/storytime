@@ -29,6 +29,13 @@ if not os.path.exists(SESSIONS_DIR):
 # Load .env file
 load_dotenv()
 
+# Homeframe is served as a versioned shared asset, keeping this app's templates
+# free to reference the configured deployment location.
+app.config["HOMEFRAME_URL"] = os.environ.get(
+    "HOMEFRAME_URL",
+    "https://homeframe.theplague.obsoletenerd.com/0.1",
+).rstrip("/")
+
 # OpenAI setup for image generation
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 

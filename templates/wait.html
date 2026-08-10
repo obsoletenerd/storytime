@@ -1,15 +1,20 @@
-{% extends "base.html" %} {% block title %}Please wait…{% endblock %} {% block content %}
-<p id="status">Please wait while we create your bedtime story…</p>
+{% extends "base.html" %} {% block title %}Creating your story · Storytime{% endblock %} {% block content %}
+<main class="hf-container hf-container--reading hf-page-main">
+    <section class="hf-card storytime-wait" aria-live="polite">
+        <div class="storytime-wait__icon" aria-hidden="true">✦</div>
+        <p class="hf-eyebrow">The story is beginning</p>
+        <h1>Gathering a little moonlight…</h1>
+        <p class="hf-text-muted" id="status">Your storyteller is choosing the characters, surprises, and a very satisfying ending.</p>
+        <div class="hf-progress" aria-hidden="true"><span class="hf-progress__bar storytime-progress-bar"></span></div>
+        <span class="hf-spinner" aria-hidden="true"></span>
+    </section>
+</main>
 <script>
-    // Call /generate as soon as the page loads
     fetch('{{ url_for("generate") }}', { method: "POST" })
         .then((resp) => resp.json())
-        .then((data) => {
-            // Once the LLM is done, redirect to the result page
-            window.location.href = '{{ url_for("result") }}';
-        })
+        .then(() => { window.location.href = '{{ url_for("result") }}'; })
         .catch((err) => {
-            document.getElementById("status").textContent = "Error: " + err;
+            document.getElementById("status").textContent = "We hit a snag while making the story: " + err;
         });
 </script>
 {% endblock %}

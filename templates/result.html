@@ -1,225 +1,94 @@
-{% extends "base.html" %} {% block title %}Your bedtime story{% endblock %} {%
-block content %}
-<article>
-    {% if is_loaded_story %}
-    <h2>Here is your saved story!</h2>
-    {% else %}
-    <h2>Here is your story!</h2>
-    {% endif %}
+{% extends "base.html" %} {% block title %}{{ title or 'Your bedtime story' }} · Storytime{% endblock %} {% block content %}
+<main class="hf-container hf-container--reading hf-page-main hf-stack storytime-result">
+    <header class="storytime-result__header">
+        <p class="hf-eyebrow">{% if is_loaded_story %}From your story shelf{% else %}Freshly imagined for tonight{% endif %}</p>
+        <h1>{{ title }}</h1>
+        <p class="hf-text-muted">Settle in somewhere cosy. This adventure is all yours.</p>
+    </header>
 
-    <h1>{{ title }}</h1>
-    <div class="story-content">{{ story|safe }}</div>
+    <article class="hf-card storytime-story-card">
+        <div class="hf-prose">{{ story|safe }}</div>
 
-    {% if generate_image %}
-    <div id="imageSection" style="margin-top: 2rem; text-align: center">
-        <div id="imageLoading">
-            <p><em>Creating a magical picture for your story...</em></p>
-            <div
-                style="
-                    margin: 1rem auto;
-                    width: 30px;
-                    height: 30px;
-                    border: 3px solid #e9ecef;
-                    border-radius: 50%;
-                    border-top: 3px solid var(--pico-primary);
-                    animation: spin 1s linear infinite;
-                "
-            ></div>
+        {% if generate_image %}
+        <section id="imageSection" class="storytime-image-section" aria-live="polite">
+            <div id="imageLoading" class="hf-well storytime-loading">
+                <span class="hf-spinner" aria-hidden="true"></span>
+                <p><strong>Painting the perfect scene…</strong><br /><span class="hf-text-muted">Your magical picture will appear here shortly.</span></p>
+            </div>
+            <div id="imageContainer" class="hf-hidden">
+                <img id="storyImage" class="hf-media" alt="Story illustration" />
+            </div>
+            <div id="imageError" class="hf-hidden">
+                <p class="hf-alert hf-alert--warning" role="status">✦ The picture wandered off, but your story is still wonderful.</p>
+            </div>
+        </section>
+        {% endif %}
+    </article>
+
+    <section class="hf-card storytime-next" aria-labelledby="next-title">
+        <div>
+            <p class="hf-eyebrow">When you’re ready</p>
+            <h2 id="next-title">The adventure can keep growing.</h2>
         </div>
-        <div id="imageContainer" style="display: none">
-            <img
-                id="storyImage"
-                style="
-                    max-width: 100%;
-                    height: auto;
-                    border-radius: 8px;
-                    margin-top: 1rem;
-                "
-                alt="Story illustration"
-            />
+        <div class="hf-actions">
+            <a class="hf-button hf-button--secondary" href="{{ url_for('index') }}">Make another story</a>
+            <a class="hf-button hf-button--primary" href="#" id="generateChapterBtn" onclick="generateNewChapter(); return false;">Generate a new chapter <span aria-hidden="true">→</span></a>
         </div>
-        <div id="imageError" style="display: none">
-            <p style="color: var(--pico-del-color)">
-                <em
-                    >Oops! We couldn't create the picture this time, but your
-                    story is still wonderful! 🌟</em
-                >
-            </p>
+        <div id="chapterLoading" class="hf-well storytime-loading hf-hidden" aria-live="polite">
+            <span class="hf-spinner" aria-hidden="true"></span>
+            <p><strong>Opening the next chapter…</strong><br /><span class="hf-text-muted">The adventure is continuing now.</span></p>
         </div>
-    </div>
-    {% endif %}
-</article>
-
-<div
-    style="
-        margin-top: 2rem;
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-    "
->
-    <a href="{{ url_for('index') }}">Make another story</a>
-    <a
-        href="#"
-        id="generateChapterBtn"
-        onclick="generateNewChapter(); return false;"
-    >
-        Generate a new chapter
-    </a>
-</div>
-
-<div
-    id="chapterLoading"
-    style="display: none; text-align: center; margin-top: 1rem"
->
-    <p><em>Creating the next chapter of your adventure...</em></p>
-    <div
-        style="
-            margin: 1rem auto;
-            width: 30px;
-            height: 30px;
-            border: 3px solid #e9ecef;
-            border-radius: 50%;
-            border-top: 3px solid var(--pico-primary);
-            animation: spin 1s linear infinite;
-        "
-    ></div>
-</div>
-
-<style>
-    @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-        100% {
-            transform: rotate(360deg);
-        }
-    }
-
-    .story-content {
-        font-size: 1.1em;
-        line-height: 1.6;
-        margin: 2rem 0;
-    }
-
-    .story-content h2 {
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-        color: var(--pico-primary);
-        border-bottom: 2px solid var(--pico-primary);
-        padding-bottom: 0.5rem;
-    }
-
-    .story-content p {
-        margin-bottom: 1rem;
-        text-align: justify;
-    }
-
-    .story-content img {
-        max-width: 100%;
-        height: auto;
-        border-radius: 8px;
-        margin: 2rem auto;
-        display: block;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        background: white;
-        padding: 0.5rem;
-    }
-
-    .story-content hr {
-        margin: 3rem 0;
-        border: none;
-        border-top: 3px solid var(--pico-primary);
-        opacity: 0.3;
-    }
-</style>
+    </section>
+</main>
 
 <script>
     {% if generate_image %}
-    // Start image generation when page loads (only if image generation is enabled)
-    window.addEventListener("load", function () {
-        generateImage();
-    });
+    window.addEventListener("load", generateImage);
 
     function generateImage() {
-        fetch("/generate_image", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+        fetch("/generate_image", { method: "POST", headers: { "Content-Type": "application/json" } })
             .then((response) => response.json())
-            .then((data) => {
-                if (data.status === "success" && data.image_url) {
-                    displayImage(data.image_url);
-                } else {
-                    showImageError();
-                }
-            })
-            .catch((error) => {
-                console.error("Error generating image:", error);
-                showImageError();
-            });
+            .then((data) => data.status === "success" && data.image_url ? displayImage(data.image_url) : showImageError())
+            .catch((error) => { console.error("Error generating image:", error); showImageError(); });
     }
 
     function displayImage(imageUrl) {
-        document.getElementById("imageLoading").style.display = "none";
-        document.getElementById("imageContainer").style.display = "block";
+        document.getElementById("imageLoading").classList.add("hf-hidden");
+        document.getElementById("imageContainer").classList.remove("hf-hidden");
         document.getElementById("storyImage").src = imageUrl;
     }
 
     function showImageError() {
-        document.getElementById("imageLoading").style.display = "none";
-        document.getElementById("imageError").style.display = "block";
+        document.getElementById("imageLoading").classList.add("hf-hidden");
+        document.getElementById("imageError").classList.remove("hf-hidden");
     }
     {% endif %}
 
     function generateNewChapter() {
-        // Show loading indicator
-        document.getElementById("chapterLoading").style.display = "block";
+        document.getElementById("chapterLoading").classList.remove("hf-hidden");
         const btn = document.getElementById("generateChapterBtn");
         btn.style.pointerEvents = "none";
-        btn.textContent = "Generating...";
-        btn.style.opacity = "0.6";
+        btn.setAttribute("aria-disabled", "true");
+        btn.innerHTML = "Generating…";
 
-        // Check if images are enabled to update loading message
         const hasImageGeneration = {{ 'true' if generate_image else 'false' }};
         if (hasImageGeneration) {
-            document.querySelector("#chapterLoading p em").textContent =
-                "Creating the next chapter and its magical picture...";
+            document.querySelector("#chapterLoading .hf-text-muted").textContent = "The next chapter and its magical picture are on their way.";
         }
 
-        fetch("/generate_chapter", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
+        fetch("/generate_chapter", { method: "POST", headers: { "Content-Type": "application/json" } })
             .then((response) => response.json())
-            .then((data) => {
-                if (data.status === "success" && data.redirect) {
-                    // Reload the page to show the updated story
-                    window.location.reload();
-                } else {
-                    showChapterError();
-                }
-            })
-            .catch((error) => {
-                console.error("Error generating chapter:", error);
-                showChapterError();
-            });
+            .then((data) => data.status === "success" && data.redirect ? window.location.reload() : showChapterError())
+            .catch((error) => { console.error("Error generating chapter:", error); showChapterError(); });
     }
 
     function showChapterError() {
-        document.getElementById("chapterLoading").style.display = "none";
+        document.getElementById("chapterLoading").classList.add("hf-hidden");
         const btn = document.getElementById("generateChapterBtn");
         btn.style.pointerEvents = "auto";
-        btn.textContent = "Generate a new chapter";
-        btn.style.opacity = "1";
-        alert(
-            "Sorry, we couldn't generate a new chapter right now. Please try again!",
-        );
+        btn.removeAttribute("aria-disabled");
+        btn.innerHTML = 'Generate a new chapter <span aria-hidden="true">→</span>';
+        alert("Sorry, we couldn't generate a new chapter right now. Please try again!");
     }
 </script>
 {% endblock %}
