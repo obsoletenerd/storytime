@@ -1,6 +1,6 @@
 [project]
 name = "storytime"
-version = "0.1.0"
+version = "2.0.0.dev0"
 description = "A little Flask-based LLM-backed story generator for my kids, hosted on an Raspberry Pi so anyone in the house can access it from their mobile devices."
 readme = "README.md"
 requires-python = ">=3.13"
