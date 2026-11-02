@@ -78,7 +78,7 @@ class OpenAIProvider(LLMProvider):
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=1000,
+                max_tokens=1800,
                 temperature=0.7
             )
             return response.choices[0].message.content
@@ -108,7 +108,7 @@ class ClaudeProvider(LLMProvider):
         try:
             response = self.client.messages.create(
                 model="claude-3-haiku-20240307",  # Using the faster, cheaper model
-                max_tokens=1000,
+                max_tokens=1800,
                 messages=[
                     {"role": "user", "content": prompt}
                 ]
@@ -147,7 +147,7 @@ class MistralProvider(LLMProvider):
             response = self.client.chat.complete(
                 model="mistral-small-latest",
                 messages=messages,
-                max_tokens=1000,
+                max_tokens=1800,
                 temperature=0.7
             )
             return response.choices[0].message.content

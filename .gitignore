@@ -17,3 +17,4 @@ wheels/
 # Project-specific Ignores
 stories/*
 sessions/
+data/
